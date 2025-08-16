@@ -1,26 +1,515 @@
 @import "tailwindcss";
 
+/* === Space Theme Variables === */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b0f1a;  /* dark navy base */
+  --foreground: #e6ecff;  /* soft off-white text */
+  --panel: #121724;       /* slightly lighter panel bg */
+  --sub: #93a4c9;         /* muted blue-gray subtext */
+  --brand: #7CFFCB;       /* aqua brand accent */
+  --accent: #9D7CFF;      /* violet accent (galaxy feel) */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html[data-theme="light"] {
+  --background: white;
+  --foreground: black;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html[data-theme="dark"] {
+  --background: #0b0f1a;
+  --foreground: #e6ecff;
+}
+
+/* === Base Layout === */
+html {
+  position: relative;
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
+  min-height: 100%;
+  background: transparent;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* === Subtle Galaxy Backdrop === */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    /* animated nebula glows */
+    radial-gradient(1200px 800px at 80% -10%, rgba(124,255,203,0.16), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(157,124,255,0.14), transparent 60%),
+    radial-gradient(700px 500px at 110% 40%, rgba(255,209,102,0.10), transparent 60%),
+
+    /* brighter stars */
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.30) 50%, transparent 51%),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.26) 50%, transparent 51%),
+    radial-gradient(1px 1px at 75% 20%, rgba(255,255,255,0.28) 50%, transparent 51%),
+    radial-gradient(1px 1px at 35% 80%, rgba(255,255,255,0.25) 50%, transparent 51%),
+
+    /* solid navy base */
+    var(--background);
+
+  background-blend-mode: screen;
+  opacity: 1;
+
+  /* subtle drift animation */
+  animation: galaxy-drift 60s ease-in-out infinite alternate;
+}
+
+/* Keyframes for slow drifting glow */
+@keyframes galaxy-drift {
+  0% {
+    background-position: 0% 0%, 0% 0%, 0% 0%,
+                         0% 0%, 0% 0%, 0% 0%, 0% 0%, center;
+  }
+  100% {
+    background-position: 3% 2%, -2% 3%, 2% -3%,
+                         0% 0%, 0% 0%, 0% 0%, 0% 0%, center;
+  }
+}
+/* === Brand link + button === */
+a.link {
+  text-decoration: none;
+  position: relative;
+}
+a.link::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  opacity: 0.9;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms ease;
+}
+a.link:hover::after { transform: scaleX(1); }
+
+.button {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0.6rem 1rem; border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--foreground) 20%, transparent);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--brand) 35%, transparent),
+    color-mix(in oklab, var(--accent) 25%, transparent)
+  );
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+}
+.button:active { transform: translateY(0); }
+
+/* layout helpers */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+
+/* cards & tags */
+.card {
+  background: color-mix(in oklab, var(--panel) 100%, transparent);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.tag {
+  font-size: 12px; line-height: 1; padding: 0.35rem 0.55rem; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: color-mix(in oklab, var(--foreground) 3%, transparent);
+  opacity: 0.9;
+}
+
+/* small chips for the theme knobs */
+.chip {
+  font-size: 12px; line-height: 1; padding: 0.35rem 0.6rem; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--brand) 22%, transparent),
+      color-mix(in oklab, var(--accent) 10%, transparent)
+    );
+  backdrop-filter: blur(6px);
+}
+.chip:hover { opacity: 0.9; }
+
+/* floating action button */
+.fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 50;
+  padding: 0.6rem 0.9rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--brand) 25%, transparent),
+    color-mix(in oklab, var(--accent) 18%, transparent)
+  );
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+}
+
+/* slide-out panel */
+.panel {
+  position: fixed; right: 18px; bottom: 70px; z-index: 50;
+  width: 280px; padding: 12px; border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: color-mix(in oklab, var(--panel) 100%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.panel-row { display: grid; gap: 8px; margin-bottom: 10px; }
+.panel-row:last-child { margin-bottom: 0; }
+.row-items { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Slide-in/out for the floating panel */
+.panel {
+  transform: translateY(10px) scale(0.98);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease,
+    visibility 0s linear 220ms; /* delay hiding until fade completes */
+}
+
+.panel[data-open="true"] {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  visibility: visible;
+  transition:
+    transform 260ms cubic-bezier(.2,.8,.2,1),
+    opacity 260ms cubic-bezier(.2,.8,.2,1),
+    visibility 0s linear 0s; /* show immediately */
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel[data-open="true"] {
+    transition: none;
+    transform: none;
+  }
+}
+/* floating action button */
+.fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 50;
+  padding: 0.6rem 0.9rem; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--brand) 25%, transparent),
+    color-mix(in oklab, var(--accent) 18%, transparent)
+  );
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+}
+
+/* slide-out panel (position + animation in one place) */
+.panel {
+  position: fixed; right: 18px; bottom: 70px; z-index: 50;
+  width: 280px; padding: 12px; border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: color-mix(in oklab, var(--panel) 100%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+
+  /* closed state */
+  transform: translateY(10px) scale(0.98);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease,
+    visibility 0s linear 220ms;
+}
+
+/* open state */
+.panel[data-open="true"] {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  visibility: visible;
+  transition:
+    transform 260ms cubic-bezier(.2,.8,.2,1),
+    opacity 260ms cubic-bezier(.2,.8,.2,1),
+    visibility 0s linear 0s;
+}
+
+/* internals */
+.panel-row { display: grid; gap: 8px; margin-bottom: 10px; }
+.panel-row:last-child { margin-bottom: 0; }
+.row-items { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .panel, .panel[data-open="true"] { transition: none; transform: none; }
+}
+
+/* Floating top navbar (extra transparent + nicer glass) */
+/* Floating top navbar (skinnier base, premium glass) */
+.nav-float {
+  position: fixed; top: 10px; left: 50%; transform: translateX(-50%) scale(1);
+  z-index: 60;
+  display: flex; gap: 8px; align-items: center;
+
+  /* slimmer default padding */
+  padding: 8px 12px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+    color-mix(in oklab, var(--panel) 60%, transparent);
+  backdrop-filter: blur(12px) saturate(120%);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.45),
+    0 0 1px rgba(255,255,255,0.25) inset;
+
+  transition:
+    transform 240ms cubic-bezier(.2,.8,.2,1),
+    opacity 240ms ease,
+    padding 180ms ease,
+    background 180ms ease,
+    gap 180ms ease;
+}
+
+/* Slightly tighter when scrolled (before hiding) + small scale for depth */
+.nav-scrolled {
+  padding: 6px 10px;             /* skinnier */
+  gap: 6px;
+  transform: translateX(-50%) scale(0.97);
+}
+
+/* Hide on downward scroll: slide up & scale a touch more */
+.nav-hidden {
+  transform: translate(-50%, -120%) scale(0.95);
+  opacity: 0;
+}
+
+/* Brand + links (unchanged, but included for completeness) */
+.nav-brand {
+  font-weight: 600; padding: 6px 10px; border-radius: 999px; text-decoration: none;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.nav-link {
+  padding: 6px 10px; border-radius: 999px; text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.nav-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 0 8px var(--accent);
+}
+.nav-link.active {
+  color: var(--accent);
+  font-weight: 600;
+  text-shadow: 0 0 6px var(--accent);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .nav-float { transition: none; }
+  .nav-hidden { transform: translate(-50%, -120%); }
+}
+
+/* project cover thumbnails */
+.cover {
+  width: 100%; aspect-ratio: 16 / 9; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background:
+    radial-gradient(120% 80% at 80% -10%, color-mix(in oklab, var(--brand) 35%, transparent), transparent 60%),
+    radial-gradient(100% 70% at -10% 110%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--panel) 100%, transparent), transparent 0%);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.cover:hover { transform: translateY(-1px); transition: transform 160ms ease; }
+
+/* Active state for nav links */
+.nav-link.active {
+  color: var(--accent);
+  font-weight: 600;
+  text-shadow: 0 0 6px var(--accent);
+}
+
+/* Glow + subtle bounce on hover */
+.glow-bounce {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.glow-bounce:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* Hero polish */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* soft cosmic halo behind the hero content */
+.hero-card::before {
+  content: "";
+  position: absolute; inset: -20% -10% auto -10%;
+  height: 70%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60% 60% at 70% 0%, color-mix(in oklab, var(--brand) 30%, transparent), transparent 60%),
+    radial-gradient(50% 50% at 30% 30%, color-mix(in oklab, var(--accent) 24%, transparent), transparent 60%);
+  filter: blur(16px);
+  opacity: 0.6;
+}
+
+/* headline treatment */
+.hero-title {
+  position: relative;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  display: inline-block;
+  padding-inline: .1em;
+}
+
+/* thin “orbit” underline that hints at motion without animation */
+.hero-accent {
+  position: absolute; left: 8%; right: 8%; bottom: -8px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  box-shadow: 0 0 14px color-mix(in oklab, var(--accent) 50%, transparent);
+  opacity: .85;
+}
+
+/* optional kicker refinement */
+.kicker { letter-spacing: .06em; text-transform: uppercase; font-size: .9rem; }
+
+/* chip already exists; make them a hair tighter for hero */
+.chip { padding: 0.35rem 0.6rem; border-radius: 999px; }
+
+/* Smooth fade/slide each time the key changes */
+.tagline-fade {
+  display: inline-block;
+  animation: taglineSwap 520ms ease both;
+  will-change: opacity, transform;
+}
+
+@keyframes taglineSwap {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease forwards;
+}
+/* Pulse glow animation for the home icon */
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px var(--accent)) drop-shadow(0 0 12px var(--accent2));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 20px var(--accent2));
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Heading glow on hover/active */
+h1, h2, h3, h4 {
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+h1:hover, h2:hover, h3:hover, h4:hover,
+h1:focus, h2:focus, h3:focus, h4:focus {
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent2);
+}
+
+/* Gradient color cycle for heading hover */
+@keyframes headingGlow {
+  0% {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent2);
+  }
+  50% {
+    color: var(--accent2);
+    text-shadow: 0 0 10px var(--accent2), 0 0 20px var(--accent);
+  }
+  100% {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent2);
+  }
+}
+
+h1, h2, h3, h4 {
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Trigger animation on hover/active */
+h1:hover, h2:hover, h3:hover, h4:hover,
+h1:focus, h2:focus, h3:focus, h4:focus {
+  animation: headingGlow 3s ease-in-out infinite;
+}
+/* Secondary accent (used for cycling glow).
+   If you already set --accent2 elsewhere, keep that; otherwise this derives it.*/
+:root {
+  --accent2: color-mix(in oklab, var(--accent) 55%, var(--brand) 45%);
+}
+
+/* Heading gradient glow — opt-in with .heading-glow */
+.heading-glow {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;                  /* ensures gradient text shows */
+  text-shadow: 0 0 6px color-mix(in oklab, var(--accent) 60%, transparent);
+  transition: text-shadow 200ms ease, filter 200ms ease;
+}
+
+/* Animate the gradient + strengthen the glow when hovered/focused */
+.heading-glow:hover,
+.heading-glow:focus {
+  animation: headingShift 3.5s ease-in-out infinite alternate;
+  text-shadow:
+    0 0 10px color-mix(in oklab, var(--accent) 70%, transparent),
+    0 0 18px color-mix(in oklab, var(--accent2) 55%, transparent);
+}
+
+@keyframes headingShift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* Sync the home icon's pulse with accent2 as well */
+@keyframes pulseGlow {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 6px var(--accent))
+      drop-shadow(0 0 12px var(--accent2));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 10px var(--accent2))
+      drop-shadow(0 0 20px var(--accent));
+  }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
 }
