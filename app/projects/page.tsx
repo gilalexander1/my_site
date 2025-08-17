@@ -95,3 +95,16 @@ export default function ProjectsPage() {
     </main>
   );
 }
+import Image from "next/image";
+
+// inside your <article className="card"> … </article>
+<div className="cover" aria-hidden="true">
+  <Image
+    src="/projects/philosopher-sol-cover.webp"
+    alt="Philosopher Sol preview"
+    fill
+    className="cover__img"
+    sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
+    priority
+  />
+</div>

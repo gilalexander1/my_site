@@ -1,18 +1,26 @@
 "use client";
-export default function ThemePanel() { ... }
 
+import React, { useState } from "react";
+
+type Brand = "aqua" | "violet" | "gold";
+type Accent = "yellow" | "pink" | "lime";
+type Theme = "dark" | "light";
+
+export default function ThemePanel() {
   const [open, setOpen] = useState(false);
 
-  const setBrand = (v: "aqua" | "violet" | "gold") =>
+  const setBrand = (v: Brand) =>
     document.documentElement.setAttribute("data-brand", v);
-  const setAccent = (v: "yellow" | "pink" | "lime") =>
+  const setAccent = (v: Accent) =>
     document.documentElement.setAttribute("data-accent", v);
-  const setTheme = (v: "dark" | "light") =>
+  const setTheme = (v: Theme) =>
     document.documentElement.setAttribute("data-theme", v);
 
   return (
     <>
-      <button className="fab" onClick={() => setOpen((s) => !s)}>Theme</button>
+      <button className="fab" aria-expanded={open} onClick={() => setOpen(s => !s)}>
+        Theme
+      </button>
 
       {open && (
         <div className="panel">
