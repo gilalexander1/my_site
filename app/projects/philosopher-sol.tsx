@@ -126,3 +126,47 @@ export default async function PhilosopherSolPage() {
     />
   </div>
 </section>
+"use client";
+import Link from "next/link";
+
+function LiveButton({ href }: { href: string }) {
+  const isInternal = href.startsWith("/");
+  return isInternal ? (
+    <Link className="button" href={href} prefetch={false}>Live</Link>
+  ) : (
+    <a className="button" href={href} target="_blank" rel="noreferrer">Live</a>
+  );
+}
+
+export default function ProjectsPage() {
+  const projects = [
+    {
+      slug: "philosopher-sol",
+      title: "Philosopher Sol",
+      blurb: "An AI companion that speaks in my voice—existential, grounded, and a little cosmic.",
+      tags: ["LLM", "TypeScript", "RAG"],
+      live: "/sol",          // 👈 point the Live button here
+      repo: "#",
+      // image: "/projects/philosopher-sol-cover.webp", // if you added a cover
+    },
+    // ...other projects
+  ] as const;
+
+  return (
+    <main className="container py-16">
+      {/* ...header and grid shell... */}
+      <div className="projects-grid">
+        {projects.map((p) => (
+          <article key={p.slug} className="card p-6 md:p-7">
+            {/* cover, title, blurb, tags ... */}
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link className="button" href={`/projects/${p.slug}`} prefetch={false}>View details</Link>
+              <LiveButton href={p.live} />
+              <a className="button" href={p.repo} target="_blank" rel="noreferrer">Code</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </main>
+  );
+}

@@ -553,3 +553,218 @@ h1:focus, h2:focus, h3:focus, h4:focus {
 
 /* (optional) if you prefer fixed height instead of aspect-ratio: */
 /* .cover { aspect-ratio: auto; height: 10rem; } */
+
+/* floating shell */
+.nav-shell{
+  position: fixed; top: 20px; right: 20px;
+  display: flex; gap: 24px; align-items: center;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: color-mix(in oklab, var(--panel) 60%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 15px rgba(255,255,255,0.05),
+              0 0 30px rgba(124,255,203,0.15);
+  transition: opacity .25s ease, transform .25s ease, box-shadow .2s ease;
+}
+.nav-show{ opacity: 1; transform: scale(1); }
+.nav-hide{ opacity: 0; transform: scale(.95); }
+
+/* home icon glow */
+.home-link{ display:flex; align-items:center; }
+.house-glow{
+  filter: drop-shadow(0 0 6px rgba(124,255,203,.45));
+  transition: transform .2s ease, filter .2s ease;
+}
+.home-link:hover .house-glow{
+  transform: translateY(-1px);
+  filter: drop-shadow(0 0 12px rgba(124,255,203,.7));
+}
+
+/* link glow on hover */
+.nav-link{
+  display:inline-block;
+  text-decoration:none;
+  font-weight: 500;
+  color: var(--text);
+  transition: color .2s ease, text-shadow .25s ease, transform .2s ease;
+}
+.nav-link:hover{
+  color: var(--accent);
+  text-shadow: 0 0 8px color-mix(in oklab, var(--accent) 60%, transparent);
+  transform: translateY(-1px);
+}
+/* Global top padding for all pages (room under the floating nav) */
+:root {
+  /* tweak these numbers if you want more/less space */
+  --page-top-pad: clamp(48px, 8vh, 96px);
+}
+
+@media (max-width: 768px) {
+  :root { --page-top-pad: clamp(36px, 6vh, 72px); }
+}
+
+/* apply to the wrapper main we added */
+.page {
+  padding-top: var(--page-top-pad);
+}
+
+/* (nice extra) anchor links won’t hide under the nav when you jump to #ids */
+[id] { scroll-margin-top: var(--page-top-pad); }
+
+:root { --page-top-pad: clamp(48px, 8vh, 96px); }
+@media (max-width: 768px) { :root { --page-top-pad: clamp(36px, 6vh, 72px); } }
+.page { padding-top: var(--page-top-pad); }
+[id] { scroll-margin-top: var(--page-top-pad); }
+
+/* --- Buttons --- */
+.btn{
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.55rem 1rem; border-radius:9999px;
+  border:1px solid rgba(255,255,255,.12);
+  font-weight:600; text-decoration:none; cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .2s ease;
+  will-change: transform, box-shadow;
+}
+.btn--primary{
+  color:#0b0f1a;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  border-color: transparent;
+}
+.btn--outline{
+  color: var(--text);
+  background: color-mix(in oklab, var(--panel) 65%, transparent);
+  backdrop-filter: blur(6px);
+}
+.btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
+.btn:active{ transform: translateY(0); }
+
+.btn--glow{
+  box-shadow: 0 0 8px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+.btn--glow:hover{
+  box-shadow:
+    0 0 12px color-mix(in oklab, var(--accent) 55%, transparent),
+    0 0 28px color-mix(in oklab, var(--brand) 35%, transparent);
+}
+@media (prefers-reduced-motion: no-preference){
+  .btn--glow{ animation: btnPulse 3.2s ease-in-out infinite; }
+  @keyframes btnPulse{
+    0%,100%{ box-shadow: 0 0 8px color-mix(in oklab, var(--accent) 30%, transparent); }
+    50%{    box-shadow: 0 0 16px color-mix(in oklab, var(--accent) 55%, transparent); }
+  }
+}
+.btn:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.25),
+    0 0 0 6px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* --- Skill pills --- */
+.skills{ display:flex; flex-wrap:wrap; gap:.5rem; }
+.pill{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.3rem .6rem; border-radius:9999px; font-size:.78rem; line-height:1;
+  border:1px solid rgba(255,255,255,.12);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.pill--solid{ color:#0b0f1a; }
+.pill:focus-visible{
+  outline:none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.22);
+}
+
+/* tasteful, not loud tones (solid backgrounds) */
+.tone-aqua   { background: color-mix(in oklab, var(--brand) 75%, white); }
+.tone-violet { background: color-mix(in oklab, var(--accent) 75%, white); }
+.tone-gold   { background: color-mix(in oklab, #FFD166 75%, white); }
+.tone-slate  { background: color-mix(in oklab, #93a4c9 70%, white); } /* neutral option */
+
+/* subtle hover lift without shouting */
+.pill:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.25); }
+
+/* ---------- Buttons: small + glow variant ---------- */
+.button--sm {
+  padding: .45rem .9rem;
+  font-size: .92rem;
+}
+
+.button--glow {
+  box-shadow: 0 0 8px rgba(124,255,203,.25);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.button--glow:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 12px rgba(124,255,203,.45),
+    0 0 28px rgba(157,124,255,.25);
+  border-color: rgba(255,255,255,.22);
+}
+.button--glow:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.25),
+    0 0 0 6px rgba(124,255,203,.35);
+}
+
+/* ---------- Avatar subtle glow ---------- */
+.avatar-glow {
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.08),
+    0 0 24px rgba(124,255,203,.20);
+}
+
+/* --- Glass Pills (subtle, with depth) --- */
+.pills { display:flex; flex-wrap:wrap; gap:.5rem; }
+
+.pill {
+  position: relative;
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.35rem .7rem; border-radius:9999px;
+  font-size:.82rem; line-height:1; color: var(--text);
+  border:1px solid rgba(255,255,255,.12);
+  /* transparent glass base + a faint tint */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
+    radial-gradient(120% 180% at 0% 0%, color-mix(in oklab, var(--pill-tint, transparent) 22%, transparent), transparent 60%);
+  backdrop-filter: blur(6px) saturate(1.05);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    0 1px 2px rgba(0,0,0,.25);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .2s ease;
+}
+.pill::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  /* soft inner vignette = depth without being loud */
+  box-shadow: inset 0 -10px 16px rgba(0,0,0,.18);
+}
+.pill:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.25);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 2px 10px rgba(0,0,0,.25),
+    0 0 12px color-mix(in oklab, var(--pill-tint, var(--accent)) 35%, transparent);
+}
+.pill:focus-visible{
+  outline:none;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.20),
+    0 0 0 6px color-mix(in oklab, var(--pill-tint, var(--accent)) 35%, transparent);
+}
+
+/* Tints (very light). Use one or mix them. */
+.tone-slate  { --pill-tint: #93a4c9; }
+.tone-aqua   { --pill-tint: var(--brand); }
+.tone-violet { --pill-tint: var(--accent); }
+.tone-gold   { --pill-tint: #FFD166; }
+
+/* If you want nearly neutral pills: */
+.pill--quiet { --pill-tint: transparent; }
+
+
+.pill:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.25); }
+.pill:focus-visible { outline:none; box-shadow: 0 0 0 3px rgba(255,255,255,.22); }

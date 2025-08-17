@@ -1,5 +1,21 @@
+// app/projects/page.tsx
+import Image from "next/image";
+import Link from "next/link";
+import { blurDataURL } from "@/lib/image";
+
+type Project = {
+  slug: string;
+  title: string;
+  blurb: string;
+  tags: string[];
+  live: string;   // "/sol" for internal proxy or full URL
+  repo: string;
+  image?: string; // optional cover image (in /public)
+  alt?: string;
+};
+
 export default function ProjectsPage() {
-  const projects = [
+  const projects: readonly Project[] = [
     {
       slug: "sol-os",
       title: "Sol OS",
@@ -11,12 +27,14 @@ export default function ProjectsPage() {
     },
     {
       slug: "philosopher-sol",
-      title: "Philosopher Sol",
+      title: "The Philosopher's Sol",
       blurb:
-        "An AI companion that speaks in my voice—existential, grounded, and a little cosmic.",
+        "An AI Ethical Decision-Making Assistant Trained in Classical and Modern Philosophy",
       tags: ["LLM", "TypeScript", "RAG"],
-      live: "#",
+      live: "/sol", // 👈 live button goes to your proxy route
       repo: "#",
+      image: "/projects/philosopher-sol-cover.webp",
+      alt: "Philosopher Sol preview",
     },
     {
       slug: "ai-travel-companion",
@@ -42,7 +60,7 @@ export default function ProjectsPage() {
       blurb:
         "A gallery of dashboards and viz experiments—Tableau workbooks, Excel models, and curated datasets.",
       tags: ["Tableau", "Excel", "Datasets"],
-      live: "#", // link to a gallery page or a Notion/Drive later
+      live: "#",
       repo: "#",
     },
     {
@@ -51,10 +69,10 @@ export default function ProjectsPage() {
       blurb:
         "Small programming experiments—CodePen/GitHub bits that show UI/UX, Python, and HTML/CSS skills.",
       tags: ["UI/UX", "Python", "HTML/CSS"],
-      live: "#", // link to a list of pens/repos later
+      live: "#",
       repo: "#",
     },
-  ] as const;
+  ];
 
   return (
     <main className="container py-16">
@@ -63,10 +81,24 @@ export default function ProjectsPage() {
         Six anchors of my portfolio. Click through for demos, write-ups, and code.
       </p>
 
-      <div className="projects-grid grid gap-6 md:grid-cols-2">
+      <div className="projects-grid">
         {projects.map((p) => (
           <article key={p.slug} className="card p-6 md:p-7">
-            <div className="cover" aria-hidden />
+            {/* Cover */}
+            <div className="cover" aria-hidden={p.image ? undefined : true}>
+              {p.image && (
+                <Image
+                    src={p.image}
+                    alt={p.alt ?? `${p.title} preview`}
+                    fill
+                    className="cover__img"
+                    sizes="(min-width:1024px) 40vw, (min-width:768px) 50vw, 100vw"
+                    priority={p.slug === "philosopher-sol"}
+                />
+              )}
+            </div>
+
+            {/* Title row */}
             <div className="flex items-start justify-between gap-4 mt-4">
               <h2 className="text-xl md:text-2xl font-medium">{p.title}</h2>
               <span
@@ -76,18 +108,36 @@ export default function ProjectsPage() {
               />
             </div>
 
+            {/* Blurb */}
             <p className="text-sub mt-2">{p.blurb}</p>
 
+            {/* Tags */}
             <div className="mt-4 flex flex-wrap gap-2">
               {p.tags.map((t) => (
                 <span key={t} className="tag">{t}</span>
               ))}
             </div>
 
+            {/* Actions */}
             <div className="mt-6 flex flex-wrap gap-3">
-              <a className="button glow-bounce" href={`/projects/${p.slug}`}>View details</a>
-              <a className="button glow-bounce" href={p.live} target="_blank">Live</a>
-              <a className="button glow-bounce" href={p.repo} target="_blank">Code</a>
+              <Link className="button glow-bounce" href={`/projects/${p.slug}`} prefetch={false}>
+                View details
+              </Link>
+
+              {/* Live: internal Link for "/..." else external <a> */}
+              {p.live.startsWith("/") ? (
+                <Link className="button glow-bounce" href={p.live} prefetch={false}>
+                  Live
+                </Link>
+              ) : (
+                <a className="button glow-bounce" href={p.live} target="_blank" rel="noreferrer">
+                  Live
+                </a>
+              )}
+
+              <a className="button glow-bounce" href={p.repo} target="_blank" rel="noreferrer">
+                Code
+              </a>
             </div>
           </article>
         ))}
@@ -95,16 +145,15 @@ export default function ProjectsPage() {
     </main>
   );
 }
-import Image from "next/image";
-
-// inside your <article className="card"> … </article>
-<div className="cover" aria-hidden="true">
+<div className="cover">
   <Image
     src="/projects/philosopher-sol-cover.webp"
     alt="Philosopher Sol preview"
     fill
     className="cover__img"
-    sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
+    sizes="(min-width:1024px) 40vw, (min-width:768px) 50vw, 100vw"
     priority
+    placeholder="blur"
+    blurDataURL={blurDataURL()}
   />
 </div>
